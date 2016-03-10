@@ -33,21 +33,27 @@ import org.apache.spark.{SparkConf, SparkContext}
       //val lines = sc.parallelize(Array("hello world", "hi"))
       val lines = sc.parallelize(List("hello world", "hi")).cache()
       val wordsWithMap = lines.map(line => line.split(" ")).coalesce(1)
-      val wordsWithFlatMap = lines.flatMap(line => line.split(" ")).coalesce(1)
+      val wordsWithFlatMap = lines.flatMap(line => line.split(" ")).coalesce(1)  //Convert to partition 1 repartitiing --we can reduce
 
       //    wordsWithMap.saveAsTextFile("src/main/resources/wordsWithMap/sampleWordCountOutPut.txt")
       //    wordsWithFlatMap.saveAsTextFile("src/main/resources/wordsWithFlatMap/sampleWordCountOutPut.txt")
       //wordsWithMap.collect().toList.foreach(println(_))
       wordsWithMap.take(2).foreach(println(_))           ///  "hello world", "hi"
       wordsWithFlatMap.foreach(println)                   //hello
-      // world",
-      // "hi"
-
+                                                          // world",
+                                                          // "hi"
+      println(lines.partitions.size)
       val lines1 = sc.parallelize(List("hello world", "hi")).cache()
       println("#####map#####")
       lines1.map(_.split(" ")).take(2).foreach(println(_))
       println("#####flatMap#####")
       lines.flatMap(_.split(" ")).take(3).foreach(println(_))                      //A flatMap() flattens multiple list into one single List
+      // flatMap() as “flattening” the iterators returned to it, so that instead of ending
+      // up with an RDD of lists we have an RDD of the elements in those lists.
+
+
+
+
     }
 
   //
