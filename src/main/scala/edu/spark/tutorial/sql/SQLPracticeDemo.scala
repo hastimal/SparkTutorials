@@ -1,19 +1,27 @@
 package edu.spark.tutorial.sql
 
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.types.{StructType,StructField,StringType}
+
 /**
- * Created by hastimal on 3/9/2016.
+ * Created by hastimal on 10/9/2015.
  */
 object SQLPracticeDemo {
   def main(args: Array[String]) {
 
-
-    val conf = new SparkConf().setAppName("SparkSQL").setMaster("local").set("com.spark.executor", "")
-
+    System.setProperty("hadoop.home.dir","F:\\winutils")
+    import org.apache.log4j.{Level, Logger}
+    Logger.getLogger("org").setLevel(Level.OFF)
+    Logger.getLogger("akka").setLevel(Level.OFF)
+    // Create a Scala Spark Context.
+    val conf = new SparkConf().setAppName("SQLPracticeDemo").setMaster("local[2]").set("spark.executor.memory","4g")
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
 
-    val jsonTextFile = sc.textFile("src/main/resources/TweetFile.json").filter(l => l != "")
+    val jsonTextFile = sc.textFile("src/main/resources/inputFile/TweetFile.json").filter(l => l != "")
 
     val jsonFile = sqlContext.jsonRDD(jsonTextFile)
 
@@ -27,12 +35,12 @@ object SQLPracticeDemo {
 
     //saving user details data as paraquet file to create a separate table.
 
-    val UserTable = userTable.saveAsParquetFile("src/main/resources/UserTable/UserDetails")
+    val UserTable = userTable.saveAsParquetFile("src/main/resources/outPut/UserTable/UserDetails")
 
 
     //Loading paraquet file to create table.
 
-    val UserDetails = sqlContext.parquetFile("src/main/resources/UserTable/UserDetails")
+    val UserDetails = sqlContext.parquetFile("src/main/resources/outPut//UserTable/UserDetails")
 
     //Creating table with user details.
 
@@ -52,11 +60,11 @@ object SQLPracticeDemo {
 
     //Saving the data as paraquet file to create table
 
-    hashTages.saveAsParquetFile("src/main/resources/hashTags")
+    hashTages.saveAsParquetFile("src/main/resources/outPut/hashTags")
 
     //loading paraquet file to create table hashTags table
 
-    val HashTagsTable = sqlContext.parquetFile("src/main/resources/hashTags")
+    val HashTagsTable = sqlContext.parquetFile("src/main/resources/outPut/hashTags")
 
     // registering or creating the HashTagsTable table
 
@@ -74,11 +82,11 @@ object SQLPracticeDemo {
 
     // Saving hashtags into text file to create table
 
-    htd.saveAsTextFile("src/main/resources/hashTagsText")
+    htd.saveAsTextFile("src/main/resources/outPut/hashTagsText")
 
     //Loading the text file.
 
-    val hashTagsTextFile = sc.textFile("src/main/resources/hashTagsText")
+    val hashTagsTextFile = sc.textFile("src/main/resources/outPut/hashTagsText")
 
     //variable holding the schema name to apply for data frame
 
@@ -116,7 +124,7 @@ object SQLPracticeDemo {
 
     //Saving the data as paraquet file
 
-    table1.saveAsParquetFile("src/main/resources/table1")
+    table1.saveAsParquetFile("src/main/resources/outPut/table1")
 
     // loading paraquet file.
 
