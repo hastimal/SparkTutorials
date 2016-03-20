@@ -1,7 +1,5 @@
 package edu.spark.tutorial.basics
 
-import java.util.Calendar
-
 import org.apache.spark.{SparkConf, SparkContext}
 /**
  * Created by hastimal on 3/5/2016.
@@ -16,10 +14,10 @@ object WordCount {
     val conf = new SparkConf().setAppName("wordCount").setMaster("local[2]").set("spark.executor.memory","8g")
     val sc = new SparkContext(conf)
     // Load our input data.
-//    val input = sc.textFile("src/main/resources/inputFile/test",10)
-    val input = sc.textFile(args(0),10)
+   val input = sc.textFile("src/main/resources/inputFile/test",5)
+   // val input = sc.textFile(args(0),10)
     println(input.partitions.size)
-    val startTime = Calendar.getInstance().getTime()
+    val startTime = System.currentTimeMillis()
     println("startTime "+startTime)
 
 
@@ -31,9 +29,9 @@ object WordCount {
     //counts.saveAsTextFile("src/main/resources/outputFile/testWC")
     println("###############ReduceByKey####################")
     val counts = words.map(word => (word, 1)).reduceByKey{case (x, y) => x + y}
-    counts.foreach(println(_))
+    counts.saveAsTextFile("src/main/resources/ooutput")
 
-    counts.saveAsTextFile(args(1))
+    counts.foreach(println(_))
 
     println("###############groupByKey####################")
     val counts1 = words.map(word => (word, 1)).groupByKey()
@@ -46,9 +44,9 @@ object WordCount {
     counts2.foreach(println(_))
 
 
-    val endTime = Calendar.getInstance().getTime()
+    val endTime = System.currentTimeMillis()
     println("endTime "+endTime)
-    val totalTime = endTime.getTime-startTime.getTime
-    println("totalTime "+totalTime)
+    val totalTime = endTime-startTime
+    println("totalTime in sec "+(totalTime/1000).toInt)
   }
 }
